@@ -1,4 +1,4 @@
-module grpc-component
+module github.com/datlt2/wallet-project-grpc
 
 go 1.21.5
 
