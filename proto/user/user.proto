@@ -1,0 +1,93 @@
+syntax = "proto3";
+package grpc.component.com.proto.user;
+option go_package = "grpc-component/proto/user";
+
+import "google/api/annotations.proto";
+
+service UserService {
+  rpc Create(UserRequest) returns (SingleResponse);
+  rpc Read(SingleUserRequest) returns (UserResponse) {
+    option (google.api.http) = {
+      get: "/v1/user/{userID}"
+    };
+  };
+  rpc Update(UserRequest) returns (SingleResponse) {
+    option (google.api.http) = {
+      patch: "/v1/user"
+      body: "*"
+    };
+  };
+  rpc Delete(SingleUserRequest) returns (SingleResponse);
+  rpc ReadPhoneInfo(ReadPhoneInfoRequest) returns (ReadPhoneInfoResponse) {
+    option (google.api.http) = {
+      get: "/v1/phone/{phone}"
+    };
+  };
+  rpc AddInfoToTransactions(AddInfoToTransacionRequest) returns (AddInfoToTransacionResponse);
+}
+
+message TransactionsRequest{
+  uint64 id = 1;
+  string source = 2;
+  string destination = 3;
+  uint64 amount = 4;
+  string time = 5;
+}
+
+message TransactionsResponse {
+  uint64 id = 1;
+  string source = 2;
+  string sourceName = 3;
+  string sourcePhone = 4;
+  string destination = 5;
+  string destinationName = 6;
+  string destinationPhone = 7;
+  uint64 amount = 8;
+  string time = 9;
+}
+
+message User{
+  string userID = 1;
+  string name = 2;
+  string email = 3;
+  string phone = 4;
+  string birthday = 5;
+}
+
+message UserRequest{
+  User user = 1;
+}
+
+message SingleUserRequest{
+  string userID = 1;
+}
+
+message SingleResponse{
+  bool success = 1;
+}
+
+message UserResponse {
+  User user = 1;
+}
+
+message  ReadPhoneInfoRequest {
+  string phone = 1;
+}
+
+message ReadPhoneInfoResponse {
+  string userID = 1;
+  string name = 2;
+  string phone = 3;
+}
+
+message AddInfoToTransacionRequest {
+  repeated TransactionsRequest transactions = 1;
+}
+
+message AddInfoToTransacionResponse {
+  repeated TransactionsResponse transactions = 2;
+}
+
+message ErrorDetail {
+  repeated string fields = 1;
+}

@@ -1,0 +1,67 @@
+syntax = "proto3";
+package grpc.component.com.proto.wallet;
+option go_package = "grpc-component/proto/wallet";
+
+import "google/api/annotations.proto";
+
+service WalletService {
+  rpc CreateWallet(SingleUserRequest) returns (SingleResponse) ;
+  rpc ReadWallet(SingleUserRequest) returns (ReadWalletResponse) {
+    option (google.api.http) = {
+      get: "/v1/wallet/{userID}"
+    };
+  };
+  rpc CreateTransaction(CreateTransactionRequest) returns (SingleResponse) {
+    option (google.api.http) = {
+      post: "/v1/transaction"
+      body: "*"
+    };
+  };
+  rpc ReadTransactions(SingleUserRequest) returns (ReadTransactionsResponse) {
+    option (google.api.http) = {
+      get: "/v1/transactions/{userID}"
+    };
+  };
+}
+
+message Wallet {
+  uint64 balance = 1;
+}
+
+message Transaction {
+  uint64 id = 1;
+  string source = 2;
+  string sourceName = 3;
+  string sourcePhone = 4;
+  string destination = 5;
+  string destinationName = 6;
+  string destinationPhone = 7;
+  uint64 amount = 8;
+  string time = 9;
+}
+
+message CreateTransactionRequest{
+  string source = 1;
+  string destination = 2;
+  uint64 amount = 3;
+}
+
+message ReadWalletResponse {
+  Wallet wallet = 1;
+}
+
+message ReadTransactionsResponse {
+  repeated Transaction transactions = 1;
+}
+
+message SingleUserRequest{
+  string userID = 1;
+}
+
+message SingleResponse{
+  bool success = 1;
+}
+
+message ErrorDetail {
+  repeated string fields = 1;
+}
