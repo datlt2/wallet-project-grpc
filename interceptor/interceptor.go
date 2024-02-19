@@ -44,17 +44,13 @@ func AuthorizationInterceptor(ctx context.Context, req interface{}, info *grpc.U
 		return nil, status.Error(codes.InvalidArgument, "Metadata not found")
 	}
 
-	// Check userId and token exist
-	if len(md["user_id"]) == 0 || len(md["user_id"][0]) == 0 {
-		grpclog.Infof("Missing userID")
-		return nil, status.Error(codes.InvalidArgument, "Missing userID in header")
-	}
+	// Check token exist
 	if len(md["authorization"]) == 0 || len(md["authorization"][0]) == 0 {
 		grpclog.Infof("Missing authorization token")
 		return nil, status.Error(codes.InvalidArgument, "Missing authorization token")
 	}
 
-	// Perform authorization check (dummy check for demonstration)
+	// Parse token and get token info (payload)
 	token, err := jwtHelepr.VerifyToken(md["authorization"][0])
 	if err != nil {
 		grpclog.Infof("Invalid token %v", md["authorization"][0])
@@ -63,8 +59,8 @@ func AuthorizationInterceptor(ctx context.Context, req interface{}, info *grpc.U
 	tokenInfo := token.Claims.(jwt.MapClaims)
 	grpclog.Infof("Token Info %v", tokenInfo)
 
-	// Verify token info
-	if ok, err := jwtHelepr.VerifyTokenInfo(md["user_id"][0], tokenInfo); !ok {
+	// Verify token info (payload) - authorization step
+	if ok, err := jwtHelepr.VerifyTokenInfo(tokenInfo); !ok {
 		return nil, status.Error(codes.Unauthenticated, err.Error())
 	}
 
